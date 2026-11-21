@@ -17,7 +17,7 @@ const request = (method, params = []) => wallet.request({ method, params });
 const read = (to, method, ...args) => request("eth_call", [{ to, data: dataFor(method, ...args) }, "latest"]);
 const show = message => { ui.status.textContent = message; };
 const messageFor = error => Number(error?.code) === 4001
-  ? "Permintaan ditolak di wallet." : (error?.message || "Permintaan wallet gagal.");
+  ? "Request rejected in wallet." : (error?.message || "Wallet request failed.");
 
 let ready;
 let busy = false;
@@ -27,9 +27,9 @@ function reset() {
   ready = undefined;
   for (const key of ["checkIn", "mintBadge", "vote", "options"]) ui[key].disabled = true;
   ui.options.replaceChildren();
-  ui.activity.textContent = "Hari dihitung dalam UTC.";
-  ui.badge.textContent = "Satu badge per wallet. Badge tidak bisa dipindahkan.";
-  ui.poll.textContent = "Polling belum dimuat.";
+  ui.activity.textContent = "Days are counted in UTC.";
+  ui.badge.textContent = "One badge per wallet. Badges cannot be transferred.";
+  ui.poll.textContent = "Poll not loaded yet.";
 }
 
 async function identity(method = "eth_accounts") {
@@ -42,7 +42,7 @@ function uintAt(data, byteOffset) {
   const start = 2 + byteOffset * 2;
   const hex = data.slice(start, start + 64);
   if (!Number.isSafeInteger(start) || !/^[0-9a-f]{64}$/i.test(hex)) {
-    throw new Error("Respons kontrak tidak valid.");
+    throw new Error("Invalid contract response.");
   }
   return BigInt("0x" + hex);
 }
@@ -54,13 +54,13 @@ function decodePoll(data) {
     const start = 2 + (offset + 32) * 2;
     const bytes = data.slice(start, start + length * 2);
     if (length > 200 || bytes.length !== length * 2 || !/^[0-9a-f]*$/i.test(bytes)) {
-      throw new Error("Teks polling tidak valid.");
+      throw new Error("Invalid poll text.");
     }
     return new TextDecoder().decode(Uint8Array.from(bytes.match(/../g) ?? [], b => parseInt(b, 16)));
   };
   const optionsOffset = Number(uint(32));
   const length = Number(uint(optionsOffset));
-  if (length > 6) throw new Error("Pilihan polling tidak valid.");
+  if (length > 6) throw new Error("Invalid poll options.");
   const head = optionsOffset + 32;
   const options = Array.from({ length }, (_, index) => stringAt(head + Number(uint(head + index * 32))));
   return { question: stringAt(Number(uint(0))), options, deadline: uint(64) };
@@ -69,25 +69,25 @@ function decodePoll(data) {
 async function refresh() {
   const current = ++revision;
   reset();
-  ui.gate.textContent = "Agent ID belum diperiksa";
+  ui.gate.textContent = "Agent ID not checked yet";
   if (!wallet?.request) {
-    show("Buka halaman di browser dengan wallet yang terpasang.");
+    show("Open this page in a browser with a wallet installed.");
     return;
   }
   try {
     const { account, chain } = await identity();
     if (current !== revision) return;
-    ui.wallet.textContent = isAddress(account) ? account : "Wallet belum terhubung";
+    ui.wallet.textContent = isAddress(account) ? account : "Wallet not connected";
     if (!isAddress(account)) return;
     if (chain !== BigInt(config.chainId)) {
-      show("Ganti jaringan di wallet ke chain ID " + config.chainId + ".");
+      show("Switch your wallet to chain ID " + config.chainId + ".");
       return;
     }
     const balance = uintAt(await read(config.agentId, "balanceOf", account), 0);
     if (current !== revision) return;
-    ui.gate.textContent = balance > 0n ? "Agent ID aktif" : "Wallet ini belum memiliki Agent ID";
+    ui.gate.textContent = balance > 0n ? "Agent ID active" : "This wallet does not hold an Agent ID";
     if (!isAddress(config.passport)) {
-      show("Alamat kontrak paspor belum dikonfigurasi.");
+      show("Passport contract address is not configured.");
       return;
     }
 
@@ -100,28 +100,28 @@ async function refresh() {
     const streak = uintAt(activity, 64);
     const minted = uintAt(badge, 0) === 1n;
     const today = BigInt(Math.floor(Date.now() / 86_400_000));
-    ui.activity.textContent = `${total} check-in · streak ${streak} hari · UTC`;
-    if (minted) ui.badge.textContent = "Badge #" + uintAt(badge, 32) + " sudah diterbitkan.";
+    ui.activity.textContent = `${total} check-ins · streak ${streak} days · UTC`;
+    if (minted) ui.badge.textContent = "Badge #" + uintAt(badge, 32) + " already minted.";
     const available = balance > 0n && !busy;
     ready = { account, chain };
     ui.checkIn.disabled = !available || (total > 0n && day === today);
     ui.mintBadge.disabled = !available || minted;
 
     const pollId = BigInt(config.pollId);
-    if (pollId < 1n || pollId >= 2n ** 256n) throw new Error("Poll ID di konfigurasi tidak valid.");
+    if (pollId < 1n || pollId >= 2n ** 256n) throw new Error("Poll ID in the config is invalid.");
     const [pollData, voted] = await Promise.all([
       read(config.passport, "getPoll", pollId), read(config.passport, "hasVoted", pollId, account),
     ]);
     if (current !== revision) return;
     const poll = decodePoll(pollData);
     if (poll.options.length < 2) {
-      ui.poll.textContent = "Belum ada polling untuk ID " + pollId + ".";
+      ui.poll.textContent = "No poll exists for ID " + pollId + ".";
       return;
     }
     const ended = poll.deadline < BigInt(Math.floor(Date.now() / 1000));
     const alreadyVoted = uintAt(voted, 0) === 1n;
     ui.poll.textContent = poll.question
-      + (alreadyVoted ? " · Suara sudah tercatat." : ended ? " · Polling ditutup." : "");
+      + (alreadyVoted ? " · Vote already recorded." : ended ? " · Poll closed." : "");
     ui.options.replaceChildren(...poll.options.map((option, index) => {
       const element = document.createElement("option");
       element.value = String(index);
@@ -143,13 +143,13 @@ async function send(method, ...args) {
   try {
     const { account, chain } = await identity();
     if (current !== revision || account?.toLowerCase() !== expected.account.toLowerCase() || chain !== expected.chain) {
-      throw new Error("Wallet atau jaringan berubah. Periksa status lalu coba lagi.");
+      throw new Error("Wallet or network changed. Check the status and try again.");
     }
-    show("Tinjau dan konfirmasi transaksi di wallet.");
+    show("Review and confirm the transaction in your wallet.");
     const hash = await request("eth_sendTransaction", [{
       from: account, to: config.passport, data: dataFor(method, ...args), value: "0x0",
     }]);
-    show("Transaksi dikirim: " + hash + ". Segarkan status setelah transaksi masuk blok.");
+    show("Transaction sent: " + hash + ". Refresh the status after the transaction is confirmed.");
   } catch (error) {
     show(messageFor(error));
   } finally {
@@ -203,7 +203,7 @@ async function loadStats() {
       if (note) note.textContent = stats.label + ".";
     }
   } catch {
-    // Angka statis di HTML tetap tampil kalau file statistik tidak bisa dimuat.
+    // The static numbers in the HTML stay visible if the stats file cannot be loaded.
   }
 }
 void loadStats();
