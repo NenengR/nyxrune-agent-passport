@@ -205,8 +205,9 @@ wallet?.on?.("chainChanged", onChange);
 ui.checkIn.addEventListener("click", () => send("checkIn"));
 ui.mintBadge.addEventListener("click", () => send("mintBadge"));
 ui.vote.addEventListener("click", () => send("vote", config.pollId, ui.options.value));
-void refresh();
-
+// No auto-connect on page load: the wallet is only touched after the user
+// clicks Connect or Refresh, so installed extensions (OKX, Phantom, and
+// others) never pop up a connect prompt on refresh.
 async function loadStats() {
   try {
     const response = await fetch("./data/stats.json", { cache: "no-store" });
