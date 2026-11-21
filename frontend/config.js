@@ -1,4 +1,4 @@
-// Isi setelah alamat kontrak diverifikasi. Poll ID menunjuk polling yang ditampilkan.
+// Filled in after the contract address was verified. Poll ID points to the poll shown on the site.
 export const config = {
   chainId: 56,
   agentId: "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
