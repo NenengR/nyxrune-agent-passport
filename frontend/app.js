@@ -3,7 +3,7 @@ import { config } from "./config.js";
 const wallet = window.ethereum;
 const ui = Object.fromEntries(
   ["connect", "refresh", "wallet", "gate", "status", "activity", "badge", "poll",
-    "options", "checkIn", "mintBadge", "vote"].map(id => [id, document.getElementById(id)])
+    "options", "checkIn", "mintBadge", "vote", "copyPrompt", "agent-prompt"].map(id => [id, document.getElementById(id)])
 );
 const selectors = {
   balanceOf: "70a08231", getCheckIn: "0786e6e4", getBadge: "c254de88",
@@ -66,6 +66,28 @@ function decodePoll(data) {
   return { question: stringAt(Number(uint(0))), options, deadline: uint(64) };
 }
 
+function buildAgentPrompt(poll) {
+  const options = poll.options.map((option, index) => `${index} ${option}`).join(", ");
+  return `Use my Binance Agentic Wallet (baw) on BNB Smart Chain (chain ${config.chainId}) to interact with the NyxRune Agent Passport contract at ${config.passport}.\n\nDo these three things, one at a time, each with a fresh preview first and only after my confirmation:\n1. checkIn() once per UTC day.\n2. mintBadge() once to claim my soulbound badge.\n3. Vote on poll ${config.pollId}, "${poll.question}": ${options}. I choose option N (replace N with the option number you want).\n\nAll calls are free except gas. Do not sign or send anything else.`;
+}
+
+async function copyPrompt() {
+  const text = ui["agent-prompt"].textContent;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch {
+    const area = document.createElement("textarea");
+    area.value = text;
+    document.body.appendChild(area);
+    area.select();
+    document.execCommand("copy");
+    area.remove();
+  }
+  ui.copyPrompt.textContent = "Copied";
+  setTimeout(() => { ui.copyPrompt.textContent = "Copy prompt"; }, 2000);
+}
+ui.copyPrompt.addEventListener("click", copyPrompt);
+
 async function refresh() {
   const current = ++revision;
   reset();
@@ -118,6 +140,7 @@ async function refresh() {
       ui.poll.textContent = "No poll exists for ID " + pollId + ".";
       return;
     }
+    ui["agent-prompt"].textContent = buildAgentPrompt(poll);
     const ended = poll.deadline < BigInt(Math.floor(Date.now() / 1000));
     const alreadyVoted = uintAt(voted, 0) === 1n;
     ui.poll.textContent = poll.question

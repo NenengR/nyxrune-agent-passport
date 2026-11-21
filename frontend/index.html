@@ -64,6 +64,20 @@
       </section>
     </div>
 
+    <section class="agent">
+      <h2>Agentic Wallet? Use your agent</h2>
+      <p>The Binance Agentic Wallet cannot connect to websites, so the Connect button above will not open it. If your Agent ID lives in an Agentic Wallet, use your AI agent instead. Copy the prompt below, paste it into your agent, and it will check in, mint your badge, and vote for you.</p>
+      <pre id="agent-prompt">Use my Binance Agentic Wallet (baw) on BNB Smart Chain (chain 56) to interact with the NyxRune Agent Passport contract at 0xd3a3e3a726881d2eed7e6e49331af16a7de52392.
+
+Do these three things, one at a time, each with a fresh preview first and only after my confirmation:
+1. checkIn() once per UTC day.
+2. mintBadge() once to claim my soulbound badge.
+3. Vote on poll 2, "Which Passport feature are you most looking forward to?": 0 Daily check-in, 1 Soulbound badge, 2 Weekly voting. I choose option N (replace N with the option number you want).
+
+All calls are free except gas. Do not sign or send anything else.</pre>
+      <button id="copyPrompt">Copy prompt</button>
+    </section>
+
     <section class="about">
       <h2>About this project</h2>
       <p>NyxRune Agent Passport was built for the Binance Agent ID Hackathon. Every rule is enforced by the smart contract on BNB Chain, not by a server: only Agent ID holders can check in, mint a badge, and vote. The contract owner can only create polls, cannot withdraw funds, cannot change the rules, and there is no fee other than gas.</p>
