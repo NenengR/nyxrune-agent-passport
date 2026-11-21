@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Statistik aktivitas NyxRune Agent Passport. Kerangka lokal, belum live.">
+  <title>NyxRune Agent Passport — Statistik</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <main>
+    <header><p class="eyebrow">NYXRUNE AGENT PASSPORT</p><h1>Aktivitas agen, terlihat jelas.</h1>
+      <p>Paspor aktivitas untuk pemegang Agent ID. Halaman ini hanya membaca statistik.</p></header>
+    <aside class="notice" role="status" id="status">KERANGKA — BELUM LIVE. Memuat data…</aside>
+    <p id="error" role="alert" hidden></p>
+    <section aria-label="Total aktivitas" class="metrics">
+      <article><h2>Alamat Agent ID aktif unik*</h2><p id="unique">—</p></article>
+      <article><h2>Check-in</h2><p id="checkins">—</p></article>
+      <article><h2>Badge</h2><p id="badges">—</p></article>
+      <article><h2>Vote</h2><p id="votes">—</p></article>
+      <article><h2>Polling dibuat</h2><p id="polls">—</p></article>
+    </section>
+    <p id="note">*Alamat unik yang muncul dalam event aktivitas, bukan seluruh pemegang Agent ID.</p>
+    <section><h2>Aktivitas per hari UTC</h2><div class="table-wrap"><table>
+      <caption>Total event per hari; alamat unik harian tidak dijumlahkan sebagai total keseluruhan.</caption>
+      <thead><tr><th scope="col">Tanggal UTC</th><th scope="col">Alamat aktif unik</th><th scope="col">Check-in</th><th scope="col">Badge</th><th scope="col">Vote</th><th scope="col">Polling</th></tr></thead>
+      <tbody id="daily"></tbody>
+    </table></div><p id="empty" hidden>Belum ada event pada rentang scan ini.</p></section>
+    <section class="provenance"><h2>Sumber data</h2><p id="provenance">Menunggu pembacaan snapshot.</p>
+      <p>Alamat kontrak Passport: <code id="contract">0xd3a3e3a726881d2eed7e6e49331af16a7de52392</code></p>
+      <p>Snapshot dibuat: <time id="updated">—</time>. Halaman memuat ulang snapshot setiap 60 detik; indexer harus dijalankan terpisah.</p>
+      <p>Data contoh tidak membuktikan kepemilikan Agent ID, transaksi nyata, atau verifikasi BscScan.</p>
+    </section>
+    <footer>Gratis plus gas saat fitur transaksi tersedia. Tidak ada return atau janji hadiah. Izin owner dalam rancangan: hanya <code>createPoll</code>. Kontrak dan frontend transaksi masih menunggu Garing.</footer>
+  </main>
+</body>
+</html>

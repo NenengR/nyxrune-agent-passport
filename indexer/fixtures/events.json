@@ -1,0 +1,9 @@
+[
+  {"id":"fixture-checkin-1","event":"CheckIn","wallet":"0x1111111111111111111111111111111111111111","timestamp":1794960000},
+  {"id":"fixture-badge-1","event":"BadgeMinted","wallet":"0x1111111111111111111111111111111111111111","timestamp":1794960001},
+  {"id":"fixture-poll-1","event":"PollCreated","timestamp":1794960002},
+  {"id":"fixture-vote-1","event":"Voted","wallet":"0x2222222222222222222222222222222222222222","timestamp":1795046399},
+  {"id":"fixture-checkin-2","event":"CheckIn","wallet":"0x2222222222222222222222222222222222222222","timestamp":1795046400},
+  {"id":"fixture-vote-2","event":"Voted","wallet":"0x1111111111111111111111111111111111111111","timestamp":1795046401},
+  {"id":"fixture-checkin-2","event":"CheckIn","wallet":"0x2222222222222222222222222222222222222222","timestamp":1795046400}
+]

@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NyxRune Agent Passport</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>NyxRune Agent Passport</h1>
+      <p>Paspor aktivitas untuk pemegang Agent ID.</p>
+      <p>Gratis, hanya bayar gas. Tidak ada return atau janji hadiah.</p>
+      <button id="connect">Hubungkan wallet</button>
+      <button id="refresh" disabled>Segarkan status</button>
+      <p id="wallet" class="address">Wallet belum terhubung</p>
+      <p id="gate">Agent ID belum diperiksa</p>
+      <p id="status" role="status"></p>
+    </header>
+    <div class="cards">
+      <section>
+        <h2>Check-in harian</h2>
+        <p id="activity">Hari dihitung dalam UTC.</p>
+        <button id="checkIn" disabled>Check-in</button>
+      </section>
+      <section>
+        <h2>Badge paspor</h2>
+        <p id="badge">Satu badge per wallet. Badge tidak bisa dipindahkan.</p>
+        <button id="mintBadge" disabled>Mint badge</button>
+      </section>
+      <section>
+        <h2>Polling mingguan</h2>
+        <p id="poll">Polling belum dimuat.</p>
+        <label for="options">Pilihan</label>
+        <select id="options" disabled></select>
+        <button id="vote" disabled>Vote</button>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>

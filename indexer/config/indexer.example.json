@@ -1,0 +1,35 @@
+{
+  "contract_address": "0xd3a3e3a726881d2eed7e6e49331af16a7de52392",
+  "agent_id_address": "0x60b9262456de011f7d15a54cdd8c48baaa8b022f",
+  "chain_id": 56,
+  "deployment_block": 134878272,
+  "confirmations": 20,
+  "block_chunk_size": 500,
+  "event_schema_verified": true,
+  "events": {
+    "CheckIn": {
+      "topic0": "0xf70c8ccfb49937cb9079ffa719be60366bdb8f901313f28dd3da4e482977a7fa",
+      "wallet": {
+        "source": "topics",
+        "index": 1
+      }
+    },
+    "BadgeMinted": {
+      "topic0": "0xc5e5b314108c1f776c2302351b8278910ddb812b122b2717b1bc973146145e9a",
+      "wallet": {
+        "source": "topics",
+        "index": 1
+      }
+    },
+    "Voted": {
+      "topic0": "0x1abe610cf2bf87e57dcc1181fcf5ac0934e843d8344ab9eed6e86c799f62585e",
+      "wallet": {
+        "source": "topics",
+        "index": 2
+      }
+    },
+    "PollCreated": {
+      "topic0": "0xc3ad3dd4f77bea708d7c21b918efa79c536b30c5048924662db7a2bd96f48316"
+    }
+  }
+}
