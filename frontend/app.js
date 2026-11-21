@@ -226,6 +226,13 @@ async function loadStats() {
       const note = document.getElementById("stats-note");
       if (note) note.textContent = stats.label + ".";
     }
+    if (Number.isFinite(Number(stats.unique_addresses))) {
+      const count = Number(stats.unique_addresses);
+      const fill = document.getElementById("target-fill");
+      const label = document.getElementById("target-label");
+      if (fill) fill.style.width = Math.min(100, (count / 30) * 100) + "%";
+      if (label) label.textContent = count + " of 30 target Agent ID addresses";
+    }
   } catch {
     // The static numbers in the HTML stay visible if the stats file cannot be loaded.
   }
