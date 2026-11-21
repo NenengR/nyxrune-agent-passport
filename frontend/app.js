@@ -183,3 +183,27 @@ ui.checkIn.addEventListener("click", () => send("checkIn"));
 ui.mintBadge.addEventListener("click", () => send("mintBadge"));
 ui.vote.addEventListener("click", () => send("vote", config.pollId, ui.options.value));
 void refresh();
+
+async function loadStats() {
+  try {
+    const response = await fetch("./data/stats.json", { cache: "no-store" });
+    if (!response.ok) return;
+    const stats = await response.json();
+    const set = (id, value) => {
+      const element = document.getElementById(id);
+      if (element && Number.isFinite(Number(value))) element.textContent = String(value);
+    };
+    set("stat-addresses", stats.unique_addresses);
+    set("stat-checkins", stats.checkins);
+    set("stat-badges", stats.badges);
+    set("stat-votes", stats.votes);
+    set("stat-polls", stats.polls);
+    if (stats.label) {
+      const note = document.getElementById("stats-note");
+      if (note) note.textContent = stats.label + ".";
+    }
+  } catch {
+    // Angka statis di HTML tetap tampil kalau file statistik tidak bisa dimuat.
+  }
+}
+void loadStats();

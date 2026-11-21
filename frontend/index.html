@@ -3,33 +3,59 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="NyxRune Agent Passport: check-in harian, badge soulbound, dan voting mingguan untuk pemegang Binance Agent ID di BNB Chain. Gratis, hanya bayar gas.">
   <title>NyxRune Agent Passport</title>
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <main>
-    <header>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">Binance Agent ID Hackathon &middot; BNB Chain</p>
       <h1>NyxRune Agent Passport</h1>
-      <p>Paspor aktivitas untuk pemegang Agent ID.</p>
-      <p>Gratis, hanya bayar gas. Tidak ada return atau janji hadiah.</p>
-      <button id="connect">Hubungkan wallet</button>
-      <button id="refresh" disabled>Segarkan status</button>
+      <p class="tagline">Paspor aktivitas untuk pemegang Agent ID. Check-in setiap hari, kumpulkan badge soulbound, dan tentukan arah proyek lewat voting mingguan.</p>
+      <p class="fine">Gratis, hanya bayar gas. Tidak ada token, tidak ada return, tidak ada janji hadiah.</p>
+      <div class="wallet-row">
+        <button id="connect" class="primary">Hubungkan wallet</button>
+        <button id="refresh" disabled>Segarkan status</button>
+      </div>
       <p id="wallet" class="address">Wallet belum terhubung</p>
-      <p id="gate">Agent ID belum diperiksa</p>
+      <p id="gate" class="gate">Agent ID belum diperiksa</p>
       <p id="status" role="status"></p>
-    </header>
+      <p class="contract">Kontrak: <a href="https://bscscan.com/address/0xd3a3e3a726881d2eed7e6e49331af16a7de52392" target="_blank" rel="noopener">0xd3a3&hellip;2392</a> di BscScan &middot; Source terverifikasi</p>
+    </div>
+  </header>
+
+  <main>
+    <section class="stats" aria-label="Statistik live">
+      <div class="stat"><strong id="stat-addresses">4</strong><span>Alamat Agent ID aktif</span></div>
+      <div class="stat"><strong id="stat-checkins">1</strong><span>Check-in</span></div>
+      <div class="stat"><strong id="stat-badges">4</strong><span>Badge diterbitkan</span></div>
+      <div class="stat"><strong id="stat-votes">1</strong><span>Vote</span></div>
+      <div class="stat"><strong id="stat-polls">1</strong><span>Polling</span></div>
+      <p class="stats-note" id="stats-note">Snapshot live 21 Nov 2026.</p>
+    </section>
+
+    <section class="how" aria-label="Cara kerja">
+      <h2>Cara kerja</h2>
+      <ol>
+        <li><strong>Hubungkan wallet</strong><span>Wallet harus memegang Agent ID, dicek langsung dari kontrak Agent ID di chain.</span></li>
+        <li><strong>Check-in dan mint badge</strong><span>Satu check-in per hari UTC, satu badge soulbound per wallet yang tidak bisa dipindahkan.</span></li>
+        <li><strong>Vote tiap minggu</strong><span>Satu suara per wallet per polling, hasil tercatat permanen di chain.</span></li>
+      </ol>
+    </section>
+
     <div class="cards">
-      <section>
+      <section class="card">
         <h2>Check-in harian</h2>
         <p id="activity">Hari dihitung dalam UTC.</p>
         <button id="checkIn" disabled>Check-in</button>
       </section>
-      <section>
+      <section class="card">
         <h2>Badge paspor</h2>
         <p id="badge">Satu badge per wallet. Badge tidak bisa dipindahkan.</p>
         <button id="mintBadge" disabled>Mint badge</button>
       </section>
-      <section>
+      <section class="card">
         <h2>Polling mingguan</h2>
         <p id="poll">Polling belum dimuat.</p>
         <label for="options">Pilihan</label>
@@ -37,7 +63,17 @@
         <button id="vote" disabled>Vote</button>
       </section>
     </div>
+
+    <section class="about">
+      <h2>Tentang proyek ini</h2>
+      <p>NyxRune Agent Passport dibangun untuk Binance Agent ID Hackathon. Semua aturan ditegakkan oleh kontrak pintar di BNB Chain, bukan oleh server: hanya pemegang Agent ID yang bisa check-in, mint badge, dan vote. Pemilik kontrak hanya bisa membuat polling, tidak bisa menarik dana, tidak bisa mengubah aturan, dan tidak ada biaya apa pun selain gas.</p>
+      <p><a href="https://github.com/NenengR/nyxrune-agent-passport" target="_blank" rel="noopener">Lihat source code di GitHub</a> &middot; <a href="https://bscscan.com/address/0xd3a3e3a726881d2eed7e6e49331af16a7de52392" target="_blank" rel="noopener">Kontrak di BscScan</a></p>
+    </section>
   </main>
+
+  <footer>
+    <p>NyxRune Agent Passport &middot; MIT &middot; Dibangun untuk pemegang Agent ID.</p>
+  </footer>
   <script type="module" src="./app.js"></script>
 </body>
 </html>
