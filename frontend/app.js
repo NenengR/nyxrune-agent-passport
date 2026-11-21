@@ -210,7 +210,7 @@ ui.vote.addEventListener("click", () => send("vote", config.pollId, ui.options.v
 // others) never pop up a connect prompt on refresh.
 async function loadStats() {
   try {
-    const response = await fetch("./data/stats.json", { cache: "no-store" });
+    const response = await fetch("./data/stats.json?v=" + Date.now(), { cache: "no-store" });
     if (!response.ok) return;
     const stats = await response.json();
     const set = (id, value) => {
