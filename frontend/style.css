@@ -166,6 +166,18 @@ button:not(.primary) { background: var(--accent-soft); color: var(--text); borde
 button:disabled, select:disabled { opacity: 0.5; cursor: default; }
 select { display: block; width: 100%; background: var(--bg-soft); color: var(--text); border: 1px solid var(--line); }
 
+.results { margin-top: 1.2rem; display: grid; gap: 0.7rem; }
+.result-question { font-weight: 650; margin: 0 0 0.1rem; }
+.result-label { display: flex; justify-content: space-between; gap: 0.8rem; font-size: 0.92rem; }
+.result-count { color: var(--muted); white-space: nowrap; }
+.result-bar { height: 0.55rem; border-radius: 999px; background: var(--bg-soft); border: 1px solid var(--line); overflow: hidden; margin-top: 0.35rem; }
+.result-bar span {
+  display: block; height: 100%; border-radius: 999px;
+  background: linear-gradient(90deg, #d5bbff, #f6d47c);
+  transition: width 0.8s ease;
+}
+.poll-meta { color: var(--faint); font-size: 0.88rem; margin: 0.8rem 0 0; }
+
 .agent { margin-top: 2.5rem; background: var(--bg-soft); border: 1px solid var(--line); border-radius: var(--radius); padding: 1.4rem; }
 .agent h2 { margin: 0 0 0.5rem; font-size: 1.25rem; }
 .agent p { color: var(--muted); max-width: 46rem; margin: 0 0 1rem; }

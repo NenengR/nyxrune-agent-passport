@@ -63,7 +63,101 @@ function decodePoll(data) {
   if (length > 6) throw new Error("Invalid poll options.");
   const head = optionsOffset + 32;
   const options = Array.from({ length }, (_, index) => stringAt(head + Number(uint(head + index * 32))));
-  return { question: stringAt(Number(uint(0))), options, deadline: uint(64) };
+  const votesOffset = Number(uint(96));
+  const votesLength = Number(uint(votesOffset));
+  if (votesLength !== length) throw new Error("Votes/options length mismatch.");
+  const votes = Array.from({ length: votesLength }, (_, index) => Number(uint(votesOffset + 32 + index * 32)));
+  return { question: stringAt(Number(uint(0))), options, deadline: uint(64), votes };
+}
+
+// Live poll results, shown to every visitor without a wallet.
+// showQuestion is true for the public path; the wallet path already
+// shows the question in the poll paragraph above.
+function renderPollResults(poll, showQuestion = true) {
+  const box = document.getElementById("poll-results");
+  const meta = document.getElementById("poll-meta");
+  if (!box) return;
+  const total = poll.votes.reduce((a, b) => a + b, 0);
+  const rows = poll.options.map((option, index) => {
+    const count = poll.votes[index] ?? 0;
+    const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+    const row = document.createElement("div");
+    const label = document.createElement("div");
+    label.className = "result-label";
+    const name = document.createElement("span");
+    name.textContent = option;
+    const value = document.createElement("span");
+    value.className = "result-count";
+    value.textContent = count + " vote" + (count === 1 ? "" : "s") + " · " + pct + "%";
+    label.append(name, value);
+    const bar = document.createElement("div");
+    bar.className = "result-bar";
+    const fill = document.createElement("span");
+    fill.style.width = pct + "%";
+    bar.append(fill);
+    row.append(label, bar);
+    return row;
+  });
+  const children = showQuestion ? [questionLine(poll.question), ...rows] : rows;
+  box.replaceChildren(...children);
+  if (meta) {
+    const deadlineMs = Number(poll.deadline) * 1000;
+    const left = deadlineMs - Date.now();
+    const date = new Date(deadlineMs).toLocaleString("en-GB", {
+      day: "numeric", month: "short", year: "numeric",
+      hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC",
+    });
+    const timing = left <= 0
+      ? "Poll closed · "
+      : "Closes in " + Math.floor(left / 86_400_000) + "d " + Math.floor((left % 86_400_000) / 3_600_000) + "h · ";
+    meta.textContent = timing + date + " UTC · " + total + " vote" + (total === 1 ? "" : "s") + " total";
+  }
+}
+
+function questionLine(question) {
+  const element = document.createElement("p");
+  element.className = "result-question";
+  element.textContent = question;
+  return element;
+}
+
+async function loadPublicPoll() {
+  const data = dataFor("getPoll", BigInt(config.pollId));
+  for (const rpc of config.publicRpcs ?? []) {
+    try {
+      const response = await fetch(rpc, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ jsonrpc: "2.0", method: "eth_call", params: [{ to: config.passport, data }, "latest"], id: 1 }),
+      });
+      if (!response.ok) continue;
+      const json = await response.json();
+      if (typeof json?.result !== "string") continue;
+      const poll = decodePoll(json.result);
+      if (poll.options.length < 2) continue;
+      renderPollResults(poll);
+      return;
+    } catch {
+      // Try the next RPC, then the stats snapshot below.
+    }
+  }
+  try {
+    const response = await fetch("./data/stats.json?v=" + Date.now(), { cache: "no-store" });
+    if (!response.ok) return;
+    const stats = await response.json();
+    const snapshot = stats.poll;
+    if (snapshot && Array.isArray(snapshot.options) && Array.isArray(snapshot.votes) && snapshot.options.length >= 2) {
+      renderPollResults({
+        question: snapshot.question,
+        options: snapshot.options,
+        deadline: BigInt(snapshot.deadline),
+        votes: snapshot.votes.map(Number),
+      });
+    }
+  } catch {
+    const meta = document.getElementById("poll-meta");
+    if (meta) meta.textContent = "Live results unavailable right now, try refreshing.";
+  }
 }
 
 function buildAgentPrompt(poll) {
@@ -141,6 +235,7 @@ async function refresh() {
       return;
     }
     ui["agent-prompt"].textContent = buildAgentPrompt(poll);
+    renderPollResults(poll, false);
     const ended = poll.deadline < BigInt(Math.floor(Date.now() / 1000));
     const alreadyVoted = uintAt(voted, 0) === 1n;
     ui.poll.textContent = poll.question
@@ -238,3 +333,4 @@ async function loadStats() {
   }
 }
 void loadStats();
+void loadPublicPoll();
